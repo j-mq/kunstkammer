@@ -2,6 +2,7 @@ import Head from 'next/head';
 import { Inter } from '@next/font/google';
 import styled from 'styled-components';
 import { useState } from 'react';
+import { getFromCollection } from './apiCalls';
 
 const Container = styled.main`
   padding: 40px;
@@ -46,7 +47,7 @@ const Discover = (props: DiscoverProps) => {
   };
 
   const onChestButtonClick = () => {
-    console.log('chest button clicked');
+    getFromCollection();
   };
 
   return (
