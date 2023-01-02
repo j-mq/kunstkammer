@@ -1,11 +1,27 @@
 import axios from 'axios';
 
-export const getFromCollection = async () => {
-  const totalObjects = await getTotalObjects();
-  const randomId = Math.floor(Math.random() * totalObjects);
+export type Artifact = {
+  title: string;
+  medium: string;
+  objectID: string;
+  objectURL: string;
+  primaryImage: string;
+  objectName: string;
+  region: string;
+  culture: string;
+  artistAlphaSort: string;
+  artistPrefix: string;
+  artistNationality: string;
+  objectDate: string;
+};
+
+export const getFromCollection = async (): Promise<Artifact> => {
+  const totalObjectsIds = await getTotalObjects();
+  const randomIdIndex = Math.floor(Math.random() * totalObjectsIds.length);
+  const randomId = totalObjectsIds[randomIdIndex];
   //TODO: Check the id is not in the Backend yet
 
-  axios
+  const response = axios
     .get(
       `https://collectionapi.metmuseum.org/public/collection/v1/objects/${randomId}`
     )
@@ -17,15 +33,24 @@ export const getFromCollection = async () => {
     .catch((error) => {
       // handle error
       console.log(error);
+      return undefined;
     })
     .finally(() => {
       // always executed
     });
+
+  return response as Promise<Artifact>;
 };
 
 const getTotalObjects = async () => {
   const response = await axios.get(
-    'https://collectionapi.metmuseum.org/public/collection/v1/objects'
+    'https://collectionapi.metmuseum.org/public/collection/v1/search',
+    {
+      params: {
+        q: '',
+        hasImages: true,
+      },
+    }
   );
-  return response.data.total;
+  return response.data.objectIDs;
 };

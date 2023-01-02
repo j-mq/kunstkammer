@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { Inter } from '@next/font/google';
 import styled from 'styled-components';
 import { useState } from 'react';
-import { getFromCollection } from './apiCalls';
+import { Artifact, getFromCollection } from './apiCalls';
 
 const Container = styled.main`
   padding: 40px;
@@ -29,6 +29,14 @@ const Main = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  width: 100%;
+  max-width: 720px;
+`;
+
+const ImageContainer = styled.img`
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
 `;
 
 const Footer = styled.div`
@@ -40,14 +48,29 @@ type DiscoverProps = {};
 const Discover = (props: DiscoverProps) => {
   const [chestButtonDisabled, setChestButtonDisabled] = useState(true);
   const [discovererName, setDiscovererName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [artifact, setArtifact] = useState<Artifact | undefined>(undefined);
 
   const onDiscovererNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDiscovererName(e.target.value);
     setChestButtonDisabled(e.target.value.length === 0);
   };
 
-  const onChestButtonClick = () => {
-    getFromCollection();
+  const onChestButtonClick = async () => {
+    setLoading(true);
+    const data = await getFromCollection();
+    if (data) {
+      console.log('the data', data);
+      setLoading(false);
+      setArtifact(data);
+    }
+  };
+
+  const getArtist = (artifact: Artifact) => {
+    if (artifact.artistPrefix || artifact.artistAlphaSort || artifact.culture) {
+      return `by ${artifact.artistPrefix} ${artifact.artistAlphaSort} ${artifact.culture}`;
+    }
+    return '';
   };
 
   return (
@@ -64,6 +87,21 @@ const Discover = (props: DiscoverProps) => {
       <Container>
         <Title>Do AI Dream of Electric Curiosities?</Title>
         <Main>
+          {loading && <div>Loading...</div>}
+          {artifact && (
+            <>
+              <ImageContainer src={artifact.primaryImage}></ImageContainer>
+              <div>
+                {artifact.title}, is a {artifact.objectName}, {artifact.region}{' '}
+                {artifact.artistNationality} {artifact.culture}
+                {getArtist(artifact)}, made in {artifact.medium}, made on the
+                year {artifact.objectDate}
+              </div>
+              <a href={artifact.objectURL} target='_blank'>
+                Original Source
+              </a>
+            </>
+          )}
           <button disabled={chestButtonDisabled} onClick={onChestButtonClick}>
             Chest Button
           </button>
