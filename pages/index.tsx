@@ -51,6 +51,7 @@ const Discover = (props: DiscoverProps) => {
   const [discovererName, setDiscovererName] = useState('');
   const [loading, setLoading] = useState(false);
   const [artifact, setArtifact] = useState<Artifact | undefined>(undefined);
+  const [generatedImage, setGeneratedImage] = useState<string>('');
 
   const onDiscovererNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDiscovererName(e.target.value);
@@ -69,7 +70,12 @@ const Discover = (props: DiscoverProps) => {
 
   const onClickGenerate = async () => {
     setLoading(true);
-    generateImage();
+    const generated = await generateImage();
+
+    if (generated.output.length > 0) {
+      setLoading(false);
+      setGeneratedImage(generated.output[0]);
+    }
   };
 
   const getArtist = (artifact: Artifact) => {
@@ -117,6 +123,9 @@ const Discover = (props: DiscoverProps) => {
             value={discovererName}
             onChange={onDiscovererNameChange}
           />
+          {generatedImage && (
+            <ImageContainer src={generatedImage}></ImageContainer>
+          )}
           <button onClick={onClickGenerate}>GenerateTest</button>
         </Main>
         <Footer>
