@@ -2,7 +2,8 @@ import Head from 'next/head';
 import { Inter } from '@next/font/google';
 import styled from 'styled-components';
 import { useState } from 'react';
-import { Artifact, getFromCollection } from './apiCalls';
+import { Artifact, getFromCollection } from './apiCallsMuseums';
+import { generateImage } from './apiCallsAI';
 
 const Container = styled.main`
   padding: 40px;
@@ -66,6 +67,11 @@ const Discover = (props: DiscoverProps) => {
     }
   };
 
+  const onClickGenerate = async () => {
+    setLoading(true);
+    generateImage();
+  };
+
   const getArtist = (artifact: Artifact) => {
     if (artifact.artistPrefix || artifact.artistAlphaSort || artifact.culture) {
       return `by ${artifact.artistPrefix} ${artifact.artistAlphaSort} ${artifact.culture}`;
@@ -111,6 +117,7 @@ const Discover = (props: DiscoverProps) => {
             value={discovererName}
             onChange={onDiscovererNameChange}
           />
+          <button onClick={onClickGenerate}>GenerateTest</button>
         </Main>
         <Footer>
           <button>Collection</button>
