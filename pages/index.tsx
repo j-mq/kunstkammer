@@ -1,9 +1,7 @@
 import Head from 'next/head';
-import { Inter } from '@next/font/google';
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { getFromCollection } from './apiCallsMuseums';
-import { generateImage, transformImage } from './apiCallsAI';
 import { Artifact } from '../constants/types';
 
 const Container = styled.main`
