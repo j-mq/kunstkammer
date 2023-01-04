@@ -4,9 +4,8 @@ export type ImageData = {
   output: string[];
 };
 
-export const generateImage = async (): Promise<ImageData> => {
-  const params = {
-    key: process.env.SD_API_KEY,
+export const generateImage = async () => {
+  const body = {
     prompt:
       'ultra realistic close up portrait ((beautiful pale cyberpunk female with heavy black eyeliner)), blue eyes, shaved side haircut, hyper detail, cinematic lighting, magic neon, dark red city, Canon EOS R3, nikon, f/1.4, ISO 200, 1/160s, 8K, RAW, unedited, symmetrical balance, in-frame, 8K',
     negative_prompt:
@@ -21,12 +20,11 @@ export const generateImage = async (): Promise<ImageData> => {
     track_id: null,
   };
 
-  const response = axios
-    .post(`https://stablediffusionapi.com/api/v3/text2img`, params)
+  const data = await axios
+    .post(`/api/sdapi`, body)
     .then((response) => {
       // handle success
-      console.log(response);
-      return response;
+      return response.data;
     })
     .catch((error) => {
       // handle error
@@ -37,5 +35,6 @@ export const generateImage = async (): Promise<ImageData> => {
       // always executed
     });
 
-  return response as unknown as Promise<ImageData>;
+  console.log('the res in front', data);
+  return data as unknown as Promise<ImageData>;
 };
