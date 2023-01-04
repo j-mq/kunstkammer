@@ -23,9 +23,6 @@ const handler = (req: NextApiRequest, res: NextApiResponse<Data>) => {
       // handle error
       console.log(error);
       res.status(200).json(error.response.data);
-    })
-    .finally(() => {
-      // always executed
     });
 };
 

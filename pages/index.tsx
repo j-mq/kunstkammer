@@ -2,8 +2,9 @@ import Head from 'next/head';
 import { Inter } from '@next/font/google';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
-import { Artifact, getFromCollection } from './apiCallsMuseums';
+import { getFromCollection } from './apiCallsMuseums';
 import { generateImage, transformImage } from './apiCallsAI';
+import { Artifact } from '../constants/types';
 
 const Container = styled.main`
   padding: 40px;
@@ -53,6 +54,7 @@ const Discover = (props: DiscoverProps) => {
   const [artifact, setArtifact] = useState<Artifact | undefined>(undefined);
   const [artifactPrompt, setArtifactPrompt] = useState<string>('');
   const [generatedImage, setGeneratedImage] = useState<string>('');
+  const [error, setError] = useState<string>('');
 
   const onDiscovererNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDiscovererName(e.target.value);
@@ -84,13 +86,16 @@ const Discover = (props: DiscoverProps) => {
       setArtifact(data);
       setArtifactPrompt(artifactPrompt);
 
-      if (data.primaryImageSmall) {
-        const transformed = await transformImage(
-          artifactPrompt,
-          data.primaryImageSmall
-        );
-        setGeneratedImage(transformed.output[0]);
-      }
+      //! Commented to avoid using AI API Credits
+      // if (data.primaryImageSmall) {
+      //   const transformed = await transformImage(
+      //     artifactPrompt,
+      //     data.primaryImageSmall
+      //   );
+      //   setGeneratedImage(transformed.output[0]);
+      // }
+    } else {
+      setError('Error getting Artifact');
     }
   };
 
@@ -118,6 +123,7 @@ const Discover = (props: DiscoverProps) => {
       <Container>
         <Title>Do AI Dream of Electric Curiosities?</Title>
         <Main>
+          {error && <div>{error}</div>}
           {loading && <div>Loading...</div>}
           {artifact && (
             <>
