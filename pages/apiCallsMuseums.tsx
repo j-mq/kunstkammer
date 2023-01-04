@@ -6,6 +6,7 @@ export type Artifact = {
   objectID: string;
   objectURL: string;
   primaryImage: string;
+  primaryImageSmall: string;
   objectName: string;
   region: string;
   culture: string;

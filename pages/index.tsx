@@ -1,16 +1,16 @@
 import Head from 'next/head';
 import { Inter } from '@next/font/google';
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Artifact, getFromCollection } from './apiCallsMuseums';
-import { generateImage } from './apiCallsAI';
+import { generateImage, transformImage } from './apiCallsAI';
 
 const Container = styled.main`
   padding: 40px;
   height: 100vh;
   display: grid;
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
   justify-items: center;
   grid-template-areas:
     'title'
@@ -51,31 +51,12 @@ const Discover = (props: DiscoverProps) => {
   const [discovererName, setDiscovererName] = useState('');
   const [loading, setLoading] = useState(false);
   const [artifact, setArtifact] = useState<Artifact | undefined>(undefined);
+  const [artifactPrompt, setArtifactPrompt] = useState<string>('');
   const [generatedImage, setGeneratedImage] = useState<string>('');
 
   const onDiscovererNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDiscovererName(e.target.value);
     setChestButtonDisabled(e.target.value.length === 0);
-  };
-
-  const onChestButtonClick = async () => {
-    setLoading(true);
-    const data = await getFromCollection();
-    if (data) {
-      console.log('the data', data);
-      setLoading(false);
-      setArtifact(data);
-    }
-  };
-
-  const onClickGenerate = async () => {
-    setLoading(true);
-    const generated = await generateImage();
-
-    if (generated.output.length > 0) {
-      setLoading(false);
-      setGeneratedImage(generated.output[0]);
-    }
   };
 
   const getArtist = (artifact: Artifact) => {
@@ -84,6 +65,44 @@ const Discover = (props: DiscoverProps) => {
     }
     return '';
   };
+
+  const getArtifactPrompt = (artifact: Artifact) => {
+    return `This is ${artifact.title}, a ${artifact.objectName}, ${
+      artifact.region
+    } ${artifact.artistNationality} ${artifact.culture} 
+    ${getArtist(artifact)}, made in ${artifact.medium}, made on the year ${
+      artifact.objectDate
+    }`;
+  };
+
+  const onChestButtonClick = async () => {
+    setLoading(true);
+    const data = await getFromCollection();
+    if (data) {
+      const artifactPrompt = getArtifactPrompt(data);
+      setLoading(false);
+      setArtifact(data);
+      setArtifactPrompt(artifactPrompt);
+
+      if (data.primaryImageSmall) {
+        const transformed = await transformImage(
+          artifactPrompt,
+          data.primaryImageSmall
+        );
+        setGeneratedImage(transformed.output[0]);
+      }
+    }
+  };
+
+  // const onClickGenerate = async () => {
+  //   setLoading(true);
+  //   const generated = await generateImage();
+
+  //   if (generated.output.length > 0) {
+  //     setLoading(false);
+  //     setGeneratedImage(generated.output[0]);
+  //   }
+  // };
 
   return (
     <>
@@ -102,13 +121,8 @@ const Discover = (props: DiscoverProps) => {
           {loading && <div>Loading...</div>}
           {artifact && (
             <>
-              <ImageContainer src={artifact.primaryImage}></ImageContainer>
-              <div>
-                {artifact.title}, is a {artifact.objectName}, {artifact.region}{' '}
-                {artifact.artistNationality} {artifact.culture}
-                {getArtist(artifact)}, made in {artifact.medium}, made on the
-                year {artifact.objectDate}
-              </div>
+              <ImageContainer src={artifact.primaryImageSmall}></ImageContainer>
+              <div>{artifactPrompt}</div>
               <a href={artifact.objectURL} target='_blank'>
                 Original Source
               </a>
@@ -126,7 +140,7 @@ const Discover = (props: DiscoverProps) => {
           {generatedImage && (
             <ImageContainer src={generatedImage}></ImageContainer>
           )}
-          <button onClick={onClickGenerate}>GenerateTest</button>
+          {/* <button onClick={onClickGenerate}>GenerateTest</button> */}
         </Main>
         <Footer>
           <button>Collection</button>

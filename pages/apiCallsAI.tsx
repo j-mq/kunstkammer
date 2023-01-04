@@ -21,7 +21,43 @@ export const generateImage = async () => {
   };
 
   const data = await axios
-    .post(`/api/sdapi`, body)
+    .post(`/api/genimage`, body)
+    .then((response) => {
+      // handle success
+      return response.data;
+    })
+    .catch((error) => {
+      // handle error
+      console.log(error);
+      return undefined;
+    })
+    .finally(() => {
+      // always executed
+    });
+
+  console.log('the res in front', data);
+  return data as unknown as Promise<ImageData>;
+};
+
+export const transformImage = async (prompt: string, imageURL: string) => {
+  const body = {
+    prompt,
+    negative_prompt:
+      '((out of frame)), ((extra fingers)), mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), (((tiling))), ((naked)), ((tile)), ((fleshpile)), ((ugly)), (((abstract))), blurry, ((bad anatomy)), ((bad proportions)), ((extra limbs)), cloned face, (((skinny))), glitchy, ((extra breasts)), ((double torso)), ((extra arms)), ((extra hands)), ((mangled fingers)), ((missing breasts)), (missing lips), ((ugly face)), ((fat)), ((extra legs)), anime',
+    init_image: imageURL,
+    width: '512',
+    height: '512',
+    samples: '1',
+    num_inference_steps: '30',
+    seed: null,
+    guidance_scale: 7.5,
+    strength: 0.7,
+    webhook: null,
+    track_id: null,
+  };
+
+  const data = await axios
+    .post(`/api/transimage`, body)
     .then((response) => {
       // handle success
       return response.data;
