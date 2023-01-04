@@ -109,6 +109,11 @@ const Discover = (props: DiscoverProps) => {
   //   }
   // };
 
+  //TODOs:
+  // - Design the UI and apply full flow
+  // - Make Backend and DB to save generated images
+  // - Connect DB data to show gallery
+
   return (
     <>
       <Head>
