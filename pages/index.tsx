@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { useState } from 'react';
 import { getFromCollection } from './apiCallsMuseums';
 import { Artifact } from '../constants/types';
+import Button from './components/Button';
+import TextInput from './components/TextInput';
 
 const Container = styled.main`
   padding: 40px;
@@ -17,10 +19,14 @@ const Container = styled.main`
     'footer';
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 1fr auto;
+  background: ${(props) => props.theme.pageBackground};
 `;
 
 const Title = styled.div`
   grid-area: title;
+  font-size: 32px;
+  text-align: center;
+  text-shadow: 0px 0px 5px #de8bc9;
 `;
 
 const Main = styled.div`
@@ -141,11 +147,12 @@ const Discover = (props: DiscoverProps) => {
           <button disabled={chestButtonDisabled} onClick={onChestButtonClick}>
             Chest Button
           </button>
-          <input
-            type='text'
+          <TextInput
             placeholder='Input your name to open'
             value={discovererName}
             onChange={onDiscovererNameChange}
+            maxCharacters={30}
+            width='230px'
           />
           {generatedImage && (
             <ImageContainer src={generatedImage}></ImageContainer>
@@ -153,7 +160,9 @@ const Discover = (props: DiscoverProps) => {
           {/* <button onClick={onClickGenerate}>GenerateTest</button> */}
         </Main>
         <Footer>
-          <button>Collection</button>
+          <Button onClick={() => console.log('Go To Collection')} width='200px'>
+            Collection
+          </Button>
         </Footer>
       </Container>
     </>
